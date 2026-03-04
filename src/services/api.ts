@@ -18,53 +18,78 @@ export class GooglePlacesService {
         throw new Error('API key is missing. Please set VITE_GOOGLE_PLACES_API_KEY in your .env file');
       }
 
-      // First, search for places
-      const textSearchUrl = `${this.baseUrl}/textsearch/json`;
-      const searchResponse = await axios.get(textSearchUrl, {
-        params: {
-          query: `${params.category} in ${params.location}`,
-          key: this.apiKey,
-          type: 'establishment'
-        }
-      });
+      let allPlaceResults: any[] = [];
+      let nextPageToken: string | undefined = undefined;
+      let pagesFetched = 0;
+      const MAX_PAGES = 3; // Google allows up to 60 results (3 pages of 20)
 
-      if (searchResponse.data.status !== 'OK') {
-        const errorMessage = this.getApiErrorMessage(searchResponse.data.status, searchResponse.data.error_message);
-        throw new Error(`Google Places API error: ${errorMessage}`);
-      }
+      do {
+        // Wait for 2 seconds before requesting the next page (required by Google API)
+        if (nextPageToken) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+
+        const textSearchUrl = `${this.baseUrl}/textsearch/json`;
+        const searchResponse = await axios.get(textSearchUrl, {
+          params: {
+            query: `${params.category} in ${params.location}`,
+            key: this.apiKey,
+            type: 'establishment',
+            pagetoken: nextPageToken
+          }
+        });
+
+        if (searchResponse.data.status !== 'OK' && searchResponse.data.status !== 'ZERO_RESULTS') {
+          const errorMessage = this.getApiErrorMessage(searchResponse.data.status, searchResponse.data.error_message);
+          throw new Error(`Google Places API error: ${errorMessage}`);
+        }
+
+        if (searchResponse.data.results) {
+          allPlaceResults = [...allPlaceResults, ...searchResponse.data.results];
+        }
+
+        nextPageToken = searchResponse.data.next_page_token;
+        pagesFetched++;
+
+      } while (nextPageToken && pagesFetched < MAX_PAGES);
 
       const businesses: Business[] = [];
 
       // Get detailed information for each place
-      for (const place of searchResponse.data.results) {
+      for (const place of allPlaceResults) {
         const detailsUrl = `${this.baseUrl}/details/json`;
-        const detailsResponse = await axios.get(detailsUrl, {
-          params: {
-            place_id: place.place_id,
-            key: this.apiKey,
-            fields: 'name,formatted_address,formatted_phone_number,website,rating,user_ratings_total,types'
+        try {
+          const detailsResponse = await axios.get(detailsUrl, {
+            params: {
+              place_id: place.place_id,
+              key: this.apiKey,
+              fields: 'name,formatted_address,formatted_phone_number,website,rating,user_ratings_total,types'
+            }
+          });
+
+          if (detailsResponse.data.status === 'OK') {
+            const details = detailsResponse.data.result;
+
+            const business: Business = {
+              id: place.place_id,
+              name: details.name || place.name,
+              address: details.formatted_address || place.formatted_address,
+              phone: details.formatted_phone_number || '',
+              website: details.website || '',
+              category: this.getMainCategory(details.types || place.types),
+              rating: details.rating || place.rating || 0,
+              reviewCount: details.user_ratings_total || place.user_ratings_total || 0,
+              hasWebsite: !!details.website,
+              hasEmail: false, // Will be determined later
+              hasPhone: !!details.formatted_phone_number,
+              claimedStatus: 'unknown' // Will be determined later
+            };
+
+            businesses.push(business);
           }
-        });
-
-        if (detailsResponse.data.status === 'OK') {
-          const details = detailsResponse.data.result;
-          
-          const business: Business = {
-            id: place.place_id,
-            name: details.name || place.name,
-            address: details.formatted_address || place.formatted_address,
-            phone: details.formatted_phone_number || '',
-            website: details.website || '',
-            category: this.getMainCategory(details.types || place.types),
-            rating: details.rating || place.rating || 0,
-            reviewCount: details.user_ratings_total || place.user_ratings_total || 0,
-            hasWebsite: !!details.website,
-            hasEmail: false, // Will be determined later
-            hasPhone: !!details.formatted_phone_number,
-            claimedStatus: 'unknown' // Will be determined later
-          };
-
-          businesses.push(business);
+        } catch (detailError) {
+          console.error(`Error fetching details for ${place.place_id}:`, detailError);
+          // Continue with next business even if one fails
         }
       }
 

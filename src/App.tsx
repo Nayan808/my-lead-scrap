@@ -20,9 +20,7 @@ function App() {
     minRating: 0,
     maxRating: 5
   });
-  const [useMockService, setUseMockService] = useState(true); // Start with mock for demo
-
-  const businessService = useMockService ? new MockBusinessService() : new GooglePlacesService();
+  const businessService = new GooglePlacesService();
 
   useEffect(() => {
     applyFilters();
@@ -32,19 +30,19 @@ function App() {
     let filtered = [...businesses];
 
     if (filters.hasWebsite !== 'all') {
-      filtered = filtered.filter(b => 
+      filtered = filtered.filter(b =>
         filters.hasWebsite === 'yes' ? b.hasWebsite : !b.hasWebsite
       );
     }
 
     if (filters.hasEmail !== 'all') {
-      filtered = filtered.filter(b => 
+      filtered = filtered.filter(b =>
         filters.hasEmail === 'yes' ? b.hasEmail : !b.hasEmail
       );
     }
 
     if (filters.hasPhone !== 'all') {
-      filtered = filtered.filter(b => 
+      filtered = filtered.filter(b =>
         filters.hasPhone === 'yes' ? b.hasPhone : !b.hasPhone
       );
     }
@@ -98,15 +96,6 @@ function App() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={useMockService}
-                  onChange={(e) => setUseMockService(e.target.checked)}
-                  className="rounded"
-                />
-                <span>Demo Mode</span>
-              </label>
               <button className="p-2 text-gray-600 hover:text-gray-900">
                 <Settings className="w-5 h-5" />
               </button>
@@ -118,20 +107,20 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           <SearchForm onSearch={handleSearch} isLoading={isLoading} />
-          
+
           {businesses.length > 0 && (
             <>
-              <FilterPanel 
-                filters={filters} 
+              <FilterPanel
+                filters={filters}
                 onFiltersChange={setFilters}
                 resultCount={filteredBusinesses.length}
               />
-              
+
               <div className="flex justify-end">
                 <ExportButton businesses={filteredBusinesses} />
               </div>
-              
-              <BusinessTable 
+
+              <BusinessTable
                 businesses={filteredBusinesses}
                 onExtractEmails={handleExtractEmails}
                 isExtractingEmails={isExtractingEmails}

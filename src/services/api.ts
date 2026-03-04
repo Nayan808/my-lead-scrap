@@ -20,8 +20,6 @@ export class GooglePlacesService {
 
       let allPlaceResults: any[] = [];
       let nextPageToken: string | undefined = undefined;
-      let pagesFetched = 0;
-      const MAX_PAGES = 3; // Google allows up to 60 results (3 pages of 20)
 
       do {
         // Wait for 2 seconds before requesting the next page (required by Google API)
@@ -49,9 +47,8 @@ export class GooglePlacesService {
         }
 
         nextPageToken = searchResponse.data.next_page_token;
-        pagesFetched++;
 
-      } while (nextPageToken && pagesFetched < MAX_PAGES);
+      } while (nextPageToken);
 
       const businesses: Business[] = [];
 

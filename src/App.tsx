@@ -92,7 +92,7 @@ function App() {
             <div className="flex items-center">
               <FileText className="w-8 h-8 text-blue-600 mr-3" />
               <h1 className="text-2xl font-bold text-gray-900">
-                GMB Audit & Lead Scraper
+                GMB Lead Scraper
               </h1>
             </div>
             <div className="flex items-center space-x-4">

@@ -30,7 +30,7 @@ export class GooglePlacesService {
         }
 
         const textSearchUrl = `${this.baseUrl}/textsearch/json`;
-        const searchResponse = await axios.get(textSearchUrl, {
+        const searchResponse: any = await axios.get(textSearchUrl, {
           params: {
             query: `${params.category} in ${params.location}`,
             key: this.apiKey,

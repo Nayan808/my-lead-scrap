@@ -3,7 +3,7 @@ import { SearchForm } from './components/SearchForm';
 import { FilterPanel } from './components/FilterPanel';
 import { BusinessTable } from './components/BusinessTable';
 import { ExportButton } from './components/ExportButton';
-import { GooglePlacesService, MockBusinessService } from './services/api';
+import { GooglePlacesService } from './services/api';
 import { EmailExtractor } from './services/emailExtractor';
 import { Business, SearchFilters, SearchParams } from './types';
 import { FileText, Settings } from 'lucide-react';

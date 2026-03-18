@@ -14,25 +14,21 @@ export class GooglePlacesService {
   private cleanPhoneNumber(phone: string): string {
     if (!phone) return '';
     
-    // Remove all non-digit characters
-    let cleaned = phone.replace(/\D/g, '');
+    // Remove all spaces (like SUBSTITUTE(C2, " ", ""))
+    let noSpaces = phone.replace(/\s/g, '');
     
-    // If it starts with 91 and has 10+ digits, remove the 91 to avoid duplication
-    if (cleaned.startsWith('91') && cleaned.length > 10) {
-      cleaned = cleaned.substring(2);
+    // Remove all non-digit characters to get only numbers
+    let digitsOnly = noSpaces.replace(/\D/g, '');
+    
+    // Take the last 10 digits (like RIGHT(..., 10))
+    let last10Digits = digitsOnly.slice(-10);
+    
+    // If we have at least 10 digits, add "91" prefix
+    if (last10Digits.length === 10) {
+      return `91${last10Digits}`;
     }
     
-    // If it's a 10-digit number (Indian), add +91 prefix
-    if (cleaned.length === 10) {
-      return `+91${cleaned}`;
-    }
-    
-    // If it's already international format, add + if missing
-    if (cleaned.length > 10 && !cleaned.startsWith('+')) {
-      return `+${cleaned}`;
-    }
-    
-    // Return as is if doesn't match expected patterns
+    // If less than 10 digits, return original
     return phone;
   }
 
@@ -180,25 +176,21 @@ export class MockBusinessService {
   private cleanPhoneNumber(phone: string): string {
     if (!phone) return '';
     
-    // Remove all non-digit characters
-    let cleaned = phone.replace(/\D/g, '');
+    // Remove all spaces (like SUBSTITUTE(C2, " ", ""))
+    let noSpaces = phone.replace(/\s/g, '');
     
-    // If it starts with 91 and has 10+ digits, remove the 91 to avoid duplication
-    if (cleaned.startsWith('91') && cleaned.length > 10) {
-      cleaned = cleaned.substring(2);
+    // Remove all non-digit characters to get only numbers
+    let digitsOnly = noSpaces.replace(/\D/g, '');
+    
+    // Take the last 10 digits (like RIGHT(..., 10))
+    let last10Digits = digitsOnly.slice(-10);
+    
+    // If we have at least 10 digits, add "91" prefix
+    if (last10Digits.length === 10) {
+      return `91${last10Digits}`;
     }
     
-    // If it's a 10-digit number (Indian), add +91 prefix
-    if (cleaned.length === 10) {
-      return `+91${cleaned}`;
-    }
-    
-    // If it's already international format, add + if missing
-    if (cleaned.length > 10 && !cleaned.startsWith('+')) {
-      return `+${cleaned}`;
-    }
-    
-    // Return as is if doesn't match expected patterns
+    // If less than 10 digits, return original
     return phone;
   }
 

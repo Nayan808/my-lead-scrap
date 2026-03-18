@@ -89,6 +89,9 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
                 Contact
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Clean Phone
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Rating
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -149,6 +152,11 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
                     {!business.email && business.hasWebsite && (
                       <StatusBadge has={false} label="Email" />
                     )}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900">
+                    {business.cleanPhone || 'N/A'}
                   </div>
                 </td>
                 <td className="px-6 py-4">

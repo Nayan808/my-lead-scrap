@@ -11,6 +11,31 @@ export class GooglePlacesService {
     this.apiKey = apiKey;
   }
 
+  private cleanPhoneNumber(phone: string): string {
+    if (!phone) return '';
+    
+    // Remove all non-digit characters
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // If it starts with 91 and has 10+ digits, remove the 91 to avoid duplication
+    if (cleaned.startsWith('91') && cleaned.length > 10) {
+      cleaned = cleaned.substring(2);
+    }
+    
+    // If it's a 10-digit number (Indian), add +91 prefix
+    if (cleaned.length === 10) {
+      return `+91${cleaned}`;
+    }
+    
+    // If it's already international format, add + if missing
+    if (cleaned.length > 10 && !cleaned.startsWith('+')) {
+      return `+${cleaned}`;
+    }
+    
+    // Return as is if doesn't match expected patterns
+    return phone;
+  }
+
   async searchBusinesses(params: SearchParams): Promise<Business[]> {
     try {
       // Check if API key is available
@@ -72,6 +97,7 @@ export class GooglePlacesService {
               name: details.name || place.name,
               address: details.formatted_address || place.formatted_address,
               phone: details.formatted_phone_number || '',
+              cleanPhone: this.cleanPhoneNumber(details.formatted_phone_number || ''),
               website: details.website || '',
               category: this.getMainCategory(details.types || place.types),
               rating: details.rating || place.rating || 0,
@@ -151,6 +177,31 @@ export class GooglePlacesService {
 
 // Mock service for development without API key
 export class MockBusinessService {
+  private cleanPhoneNumber(phone: string): string {
+    if (!phone) return '';
+    
+    // Remove all non-digit characters
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // If it starts with 91 and has 10+ digits, remove the 91 to avoid duplication
+    if (cleaned.startsWith('91') && cleaned.length > 10) {
+      cleaned = cleaned.substring(2);
+    }
+    
+    // If it's a 10-digit number (Indian), add +91 prefix
+    if (cleaned.length === 10) {
+      return `+91${cleaned}`;
+    }
+    
+    // If it's already international format, add + if missing
+    if (cleaned.length > 10 && !cleaned.startsWith('+')) {
+      return `+${cleaned}`;
+    }
+    
+    // Return as is if doesn't match expected patterns
+    return phone;
+  }
+
   async searchBusinesses(params: SearchParams): Promise<Business[]> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -161,6 +212,7 @@ export class MockBusinessService {
         name: 'Sample Restaurant',
         address: '123 Main St, ' + params.location,
         phone: '(555) 123-4567',
+        cleanPhone: this.cleanPhoneNumber('(555) 123-4567'),
         website: 'https://www.sample-restaurant.com',
         category: params.category,
         rating: 4.2,
@@ -175,6 +227,7 @@ export class MockBusinessService {
         name: 'Unclaimed Cafe',
         address: '456 Oak Ave, ' + params.location,
         phone: '',
+        cleanPhone: this.cleanPhoneNumber(''),
         website: '',
         category: params.category,
         rating: 3.8,
@@ -189,6 +242,7 @@ export class MockBusinessService {
         name: 'Professional Services LLC',
         address: '789 Elm St, ' + params.location,
         phone: '(555) 987-6543',
+        cleanPhone: this.cleanPhoneNumber('(555) 987-6543'),
         website: 'https://www.professional-services.com',
         category: params.category,
         rating: 4.7,

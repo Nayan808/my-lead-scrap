@@ -17,7 +17,6 @@ function App() {
   const [isExtractingEmails, setIsExtractingEmails] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [activeTab, setActiveTab] = useState<'search' | 'mydata' | 'confirmed'>('search');
-  const [lastSearchParams, setLastSearchParams] = useState<SearchParams | null>(null);
   const [confirmedCategoryFilter, setConfirmedCategoryFilter] = useState<string>('all');
   const [filters, setFilters] = useState<SearchFilters>({
     hasWebsite: 'all',
@@ -109,7 +108,6 @@ function App() {
 
   const handleSearch = async (params: SearchParams) => {
     setIsLoading(true);
-    setLastSearchParams(params);
     try {
       const results = await businessService.searchBusinesses(params);
       setBusinesses(results);
@@ -268,7 +266,7 @@ function App() {
             <div className="flex items-center">
               <FileText className="w-8 h-8 text-blue-600 mr-3" />
               <h1 className="text-2xl font-bold text-gray-900">
-                GMB Lead Scraper
+                GMB Lead Scarpee
               </h1>
             </div>
             <div className="flex items-center space-x-4">

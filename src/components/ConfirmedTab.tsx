@@ -1,6 +1,6 @@
 import React from 'react';
 import { Business } from '../types';
-import { CheckCircle, Phone, Mail, Globe, MessageCircle, Filter, Download } from 'lucide-react';
+import { CheckCircle, Phone, Mail, Globe, MessageCircle, Filter } from 'lucide-react';
 import { ExportButton } from './ExportButton';
 
 interface ConfirmedTabProps {

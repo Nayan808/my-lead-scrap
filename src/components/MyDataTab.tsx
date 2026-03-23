@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Phone, Mail, Globe, MessageCircle, Trash2, Download, Upload, Eye, X } from 'lucide-react';
+import { Search, MapPin, Phone, Mail, Globe, Trash2, Download, Upload, Eye, X } from 'lucide-react';
 import { Business } from '../types';
 
 interface SavedSearch {
@@ -44,48 +44,6 @@ export const MyDataTab: React.FC<MyDataTabProps> = ({ onBusinessesLoad }) => {
         console.error('Error loading saved searches:', error);
       }
     }
-  };
-
-  const saveCurrentSearch = (category: string, country: string, state: string, city: string, area: string, businesses: Business[], filters: any) => {
-    const newSearch: SavedSearch = {
-      id: Date.now().toString(),
-      category,
-      country,
-      state,
-      city,
-      area,
-      timestamp: new Date().toISOString(),
-      businessCount: businesses.length,
-      businesses: businesses,
-      filters: {
-        hasWebsite: filters.hasWebsite === 'yes',
-        hasEmail: filters.hasEmail === 'yes',
-        hasPhone: filters.hasPhone === 'yes',
-        minRating: filters.minRating || 0,
-        maxRating: filters.maxRating || 5
-      }
-    };
-
-    const updatedSearches = [...savedSearches, newSearch];
-    setSavedSearches(updatedSearches);
-    localStorage.setItem('gmbSavedSearches', JSON.stringify(updatedSearches));
-  };
-
-  const updateSavedSearchBusiness = (businessId: string, updatedBusiness: Business) => {
-    const updatedSearches = savedSearches.map(search => {
-      if (search.businesses.some(b => b.id === businessId)) {
-        return {
-          ...search,
-          businesses: search.businesses.map(b => 
-            b.id === businessId ? updatedBusiness : b
-          )
-        };
-      }
-      return search;
-    });
-    
-    setSavedSearches(updatedSearches);
-    localStorage.setItem('gmbSavedSearches', JSON.stringify(updatedSearches));
   };
 
   const deleteSearch = (searchId: string) => {

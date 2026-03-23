@@ -20,7 +20,7 @@ export const ConfirmedTab: React.FC<ConfirmedTabProps> = ({
     const info = [];
     if (business.phone) info.push({ icon: Phone, text: business.cleanPhone || business.phone });
     if (business.email) info.push({ icon: Mail, text: business.email });
-    if (business.website) info.push({ icon: Globe, text: 'Website' });
+    if (business.website) info.push({ icon: Globe, text: business.website, website: business.website });
     return info;
   };
 

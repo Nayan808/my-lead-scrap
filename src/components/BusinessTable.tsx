@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Business } from '../types';
-import { Mail, Phone, Globe, MessageCircle, Star } from 'lucide-react';
+import { Mail, Phone, Globe, MessageCircle, Star, ExternalLink } from 'lucide-react';
 
 interface BusinessTableProps {
   businesses: Business[];
@@ -16,6 +16,19 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
   onBusinessUpdate 
 }) => {
   const [whatsappMessage, setWhatsappMessage] = useState('Hello {business_name}! I found your business and would like to connect with you.');
+
+  const handleWebsiteClick = (website: string) => {
+    if (!website) return;
+    
+    // Ensure URL has protocol
+    let url = website;
+    if (!website.startsWith('http://') && !website.startsWith('https://')) {
+      url = `https://${website}`;
+    }
+    
+    // Open in new tab
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   const handleWhatsAppClick = (phoneNumber: string, businessName: string) => {
     if (!phoneNumber) return;
@@ -122,10 +135,15 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
                       </div>
                     )}
                     {business.website && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Globe className="w-4 h-4 mr-1" />
-                        Website Available
-                      </div>
+                      <button
+                        onClick={() => handleWebsiteClick(business.website)}
+                        className="flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate max-w-xs"
+                        title={`Visit ${business.website}`}
+                      >
+                        <Globe className="w-4 h-4 mr-1 flex-shrink-0" />
+                        <span className="truncate">{business.website}</span>
+                        <ExternalLink className="w-3 h-3 ml-1 flex-shrink-0" />
+                      </button>
                     )}
                   </div>
                 </td>

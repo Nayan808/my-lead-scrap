@@ -27,7 +27,8 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
       'Has Website': business.hasWebsite ? 'Yes' : 'No',
       'Has Email': business.hasEmail ? 'Yes' : 'No',
       'Has Phone': business.hasPhone ? 'Yes' : 'No',
-      'Claimed Status': business.claimedStatus || 'Unknown'
+      'Claimed Status': business.claimedStatus || 'Unknown',
+      'Lead Status': (business.leadStatus || 'not_contacted').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
     }));
 
     const csv = Papa.unparse(csvData);
@@ -57,7 +58,8 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
       'Has Website': business.hasWebsite ? 'Yes' : 'No',
       'Has Email': business.hasEmail ? 'Yes' : 'No',
       'Has Phone': business.hasPhone ? 'Yes' : 'No',
-      'Claimed Status': business.claimedStatus || 'Unknown'
+      'Claimed Status': business.claimedStatus || 'Unknown',
+      'Lead Status': (business.leadStatus || 'not_contacted').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
     }));
 
     const ws = XLSX.utils.json_to_sheet(excelData);

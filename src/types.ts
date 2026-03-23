@@ -13,6 +13,7 @@ export interface Business {
   hasPhone: boolean;
   email?: string;
   claimedStatus?: 'claimed' | 'unclaimed' | 'unknown';
+  leadStatus: 'not_contacted' | 'interested' | 'not_interested' | 'delayed';
 }
 
 export interface SearchFilters {

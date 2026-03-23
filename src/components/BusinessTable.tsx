@@ -1,18 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Business } from '../types';
-import { Star, Globe, Phone, Mail, AlertCircle, CheckCircle, ExternalLink } from 'lucide-react';
+import { Star, Globe, Phone, Mail, AlertCircle, CheckCircle, ExternalLink, MessageCircle } from 'lucide-react';
 
 interface BusinessTableProps {
   businesses: Business[];
   onExtractEmails: () => void;
   isExtractingEmails: boolean;
+  onBusinessUpdate: (updatedBusinesses: Business[]) => void;
 }
 
 export const BusinessTable: React.FC<BusinessTableProps> = ({ 
   businesses, 
   onExtractEmails, 
-  isExtractingEmails 
+  isExtractingEmails,
+  onBusinessUpdate 
 }) => {
+  const [whatsappMessage, setWhatsappMessage] = useState('Hello {business_name}! I found your business and would like to connect with you.');
+
+  const handleWhatsAppClick = (phoneNumber: string, businessName: string) => {
+    if (!phoneNumber) return;
+    
+    const personalizedMessage = whatsappMessage.replace('{business_name}', businessName);
+    const encodedMessage = encodeURIComponent(personalizedMessage);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleLeadStatusChange = (businessId: string, newStatus: Business['leadStatus']) => {
+    const updatedBusinesses = businesses.map(business => 
+      business.id === businessId 
+        ? { ...business, leadStatus: newStatus }
+        : business
+    );
+    onBusinessUpdate(updatedBusinesses);
+  };
+
+  const getRowBackgroundColor = (leadStatus: Business['leadStatus']) => {
+    const status = leadStatus || 'not_contacted';
+    switch (status) {
+      case 'interested':
+        return 'bg-green-50';
+      case 'not_interested':
+        return 'bg-red-50';
+      case 'delayed':
+        return 'bg-orange-50';
+      default:
+        return 'bg-white';
+    }
+  };
   const StatusBadge: React.FC<{ has: boolean; label: string }> = ({ has, label }) => (
     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
       has 
@@ -61,7 +96,7 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800">
             Business Results ({businesses.length})
           </h3>
@@ -72,6 +107,16 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
           >
             {isExtractingEmails ? 'Extracting Emails...' : 'Extract Emails'}
           </button>
+        </div>
+        <div className="flex items-center space-x-4">
+          <label className="text-sm font-medium text-gray-700">WhatsApp Message:</label>
+          <input
+            type="text"
+            value={whatsappMessage}
+            onChange={(e) => setWhatsappMessage(e.target.value)}
+            placeholder="Use {business_name} to insert business name. Example: Hello {business_name}! I'm interested in your services..."
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
       </div>
 
@@ -97,11 +142,17 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Lead Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                WhatsApp
+              </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200">
             {businesses.map((business) => (
-              <tr key={business.id} className="hover:bg-gray-50">
+              <tr key={business.id} className={`${getRowBackgroundColor(business.leadStatus || 'not_contacted')} hover:opacity-80`}>
                 <td className="px-6 py-4">
                   <div>
                     <div className="text-sm font-medium text-gray-900">
@@ -180,6 +231,28 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
                       <StatusBadge has={true} label="Phone" />
                     )}
                   </div>
+                </td>
+                <td className="px-6 py-4">
+                  <select
+                    value={business.leadStatus || 'not_contacted'}
+                    onChange={(e) => handleLeadStatusChange(business.id, e.target.value as Business['leadStatus'])}
+                    className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="not_contacted">Not Contacted</option>
+                    <option value="interested">Interested</option>
+                    <option value="not_interested">Not Interested</option>
+                    <option value="delayed">Delayed</option>
+                  </select>
+                </td>
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => handleWhatsAppClick(business.cleanPhone, business.name)}
+                    disabled={!business.cleanPhone}
+                    className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-1" />
+                    WhatsApp
+                  </button>
                 </td>
               </tr>
             ))}

@@ -101,7 +101,8 @@ export class GooglePlacesService {
               hasWebsite: !!details.website,
               hasEmail: false, // Will be determined later
               hasPhone: !!details.formatted_phone_number,
-              claimedStatus: 'unknown' // Will be determined later
+              claimedStatus: 'unknown', // Will be determined later
+              leadStatus: 'not_contacted' // Default status
             };
 
             businesses.push(business);
@@ -212,7 +213,8 @@ export class MockBusinessService {
         hasWebsite: true,
         hasEmail: false,
         hasPhone: true,
-        claimedStatus: 'unclaimed'
+        claimedStatus: 'unclaimed',
+        leadStatus: 'not_contacted'
       },
       {
         id: '2',
@@ -227,7 +229,8 @@ export class MockBusinessService {
         hasWebsite: false,
         hasEmail: false,
         hasPhone: false,
-        claimedStatus: 'unclaimed'
+        claimedStatus: 'unclaimed',
+        leadStatus: 'not_contacted'
       },
       {
         id: '3',
@@ -242,7 +245,8 @@ export class MockBusinessService {
         hasWebsite: true,
         hasEmail: false,
         hasPhone: true,
-        claimedStatus: 'claimed'
+        claimedStatus: 'claimed',
+        leadStatus: 'not_contacted'
       }
     ];
   }

@@ -13,23 +13,10 @@ export class GooglePlacesService {
 
   private cleanPhoneNumber(phone: string): string {
     if (!phone) return '';
-    
-    // Remove all spaces (like SUBSTITUTE(C2, " ", ""))
-    let noSpaces = phone.replace(/\s/g, '');
-    
-    // Remove all non-digit characters to get only numbers
-    let digitsOnly = noSpaces.replace(/\D/g, '');
-    
-    // Take the last 10 digits (like RIGHT(..., 10))
-    let last10Digits = digitsOnly.slice(-10);
-    
-    // If we have at least 10 digits, add "91" prefix
-    if (last10Digits.length === 10) {
-      return `91${last10Digits}`;
-    }
-    
-    // If less than 10 digits, return original
-    return phone;
+    // Google Places returns numbers in international format e.g. "+91 98765 43210", "+1 (555) 123-4567"
+    // Strip everything except digits — country code is already included in the raw string
+    const digits = phone.replace(/\D/g, '');
+    return digits.length >= 7 ? digits : '';
   }
 
   async searchBusinesses(params: SearchParams): Promise<Business[]> {
@@ -176,23 +163,10 @@ export class GooglePlacesService {
 export class MockBusinessService {
   private cleanPhoneNumber(phone: string): string {
     if (!phone) return '';
-    
-    // Remove all spaces (like SUBSTITUTE(C2, " ", ""))
-    let noSpaces = phone.replace(/\s/g, '');
-    
-    // Remove all non-digit characters to get only numbers
-    let digitsOnly = noSpaces.replace(/\D/g, '');
-    
-    // Take the last 10 digits (like RIGHT(..., 10))
-    let last10Digits = digitsOnly.slice(-10);
-    
-    // If we have at least 10 digits, add "91" prefix
-    if (last10Digits.length === 10) {
-      return `91${last10Digits}`;
-    }
-    
-    // If less than 10 digits, return original
-    return phone;
+    // Google Places returns numbers in international format e.g. "+91 98765 43210", "+1 (555) 123-4567"
+    // Strip everything except digits — country code is already included in the raw string
+    const digits = phone.replace(/\D/g, '');
+    return digits.length >= 7 ? digits : '';
   }
 
   async searchBusinesses(params: SearchParams): Promise<Business[]> {

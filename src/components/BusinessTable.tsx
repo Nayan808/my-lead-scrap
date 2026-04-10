@@ -15,7 +15,7 @@ export const BusinessTable: React.FC<BusinessTableProps> = ({
   isExtractingEmails,
   onBusinessUpdate 
 }) => {
-  const [whatsappMessage, setWhatsappMessage] = useState('Hello {business_name}! I found your business and would like to connect with you.');
+  const [whatsappMessage, setWhatsappMessage] = useState('hi');
 
   const handleWebsiteClick = (website: string) => {
     if (!website) return;

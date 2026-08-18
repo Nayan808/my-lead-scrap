@@ -5,6 +5,7 @@ import { BusinessTable } from './components/BusinessTable';
 import { ExportButton } from './components/ExportButton';
 import { MyDataTab } from './components/MyDataTab';
 import { ConfirmedTab } from './components/ConfirmedTab';
+import { SettingsModal } from './components/SettingsModal';
 import { GooglePlacesService } from './services/api';
 import { EmailExtractor } from './services/emailExtractor';
 import { Business, SearchFilters, SearchParams } from './types';
@@ -18,6 +19,7 @@ function App() {
   const [hasSearched, setHasSearched] = useState(false);
   const [activeTab, setActiveTab] = useState<'search' | 'mydata' | 'confirmed'>('search');
   const [confirmedCategoryFilter, setConfirmedCategoryFilter] = useState<string>('all');
+  const [showSettings, setShowSettings] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     hasWebsite: 'all',
     hasEmail: 'all',
@@ -270,7 +272,11 @@ function App() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-600 hover:text-gray-900">
+              <button
+                onClick={() => setShowSettings(true)}
+                className="p-2 text-gray-600 hover:text-gray-900"
+                title="API Key Settings"
+              >
                 <Settings className="w-5 h-5" />
               </button>
             </div>
@@ -396,6 +402,13 @@ function App() {
           )}
         </div>
       </main>
+
+      {showSettings && (
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          onSaved={() => setShowSettings(false)}
+        />
+      )}
     </div>
   );
 }

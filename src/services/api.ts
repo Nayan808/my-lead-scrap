@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { Business, SearchParams } from '../types';
-
-const GOOGLE_PLACES_API_KEY = import.meta.env.VITE_GOOGLE_PLACES_API_KEY; // Use environment variable
+import { getApiKey } from './apiKey';
 
 export class GooglePlacesService {
   private apiKey: string;
   private baseUrl = '/api/maps/maps/api/place'; // Use proxy endpoint
 
-  constructor(apiKey: string = GOOGLE_PLACES_API_KEY) {
+  constructor(apiKey: string = getApiKey()) {
     this.apiKey = apiKey;
   }
 
@@ -23,7 +22,7 @@ export class GooglePlacesService {
     try {
       // Check if API key is available
       if (!this.apiKey || this.apiKey === 'undefined') {
-        throw new Error('API key is missing. Please set VITE_GOOGLE_PLACES_API_KEY in your .env file');
+        throw new Error('API key is missing. Add your Google Places API key via the Settings (gear) icon.');
       }
 
       let allPlaceResults: any[] = [];
